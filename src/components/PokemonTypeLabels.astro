@@ -1,8 +1,0 @@
----
-import type { PokemonType } from "../models/PokemonSpecie";
-import PokemonTypeLabel from "./PokemonTypeLabel.astro";
-const {types} = Astro.props as {types: PokemonType[]};
----
-<section class="types">
-  {(types || []).map(type => <PokemonTypeLabel type={type} />)}
-</section>

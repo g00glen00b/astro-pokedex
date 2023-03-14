@@ -1,7 +1,7 @@
 ---
 import type { Pokemon } from "../models/PokemonSpecie";
 import PokemonStat from "./PokemonStat.astro";
-import PokemonTypeLabels from "./PokemonTypeLabels.astro";
+import PokemonTypeLabel from "./PokemonTypeLabel.astro";
 
 const {pokemon, specieName} = Astro.props as {pokemon: Pokemon, specieName: string};
 const formNames = pokemon.pokemon_v2_pokemonforms![0].pokemon_v2_pokemonformnames!;
@@ -12,7 +12,9 @@ const types = pokemon.pokemon_v2_pokemontypes!;
 <div class="card">
   <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} />
   <h1>{formNames.length > 0 ? formNames[0].name! : specieName}</h1>
-  <PokemonTypeLabels types={types} />
+  <div>
+    {types.map(type => <PokemonTypeLabel type={type} />)}
+  </div>
   <div class="stats">
     {stats.map(stat => <PokemonStat stat={stat} />)}
   </div>

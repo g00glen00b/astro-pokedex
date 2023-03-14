@@ -1,6 +1,6 @@
 ---
 import type { PokemonSpecie } from "../models/PokemonSpecie";
-import PokemonTypeLabels from "./PokemonTypeLabels.astro";
+import PokemonTypeLabel from "./PokemonTypeLabel.astro";
 
 const {specie} = Astro.props as {specie: PokemonSpecie};
 const id = specie.id!;
@@ -11,7 +11,9 @@ const types = specie.pokemon_v2_pokemons![0].pokemon_v2_pokemontypes!;
   <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`} />
   <span class="number">#{id.toString().padStart(4, '0')}</span>
   <h2>{name}</h2>
-  <PokemonTypeLabels types={types} />
+  <div>
+    {types.map(type => <PokemonTypeLabel type={type} />)}
+  </div>
 </a>
 <style>
   .card {

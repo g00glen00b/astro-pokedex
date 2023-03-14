@@ -41,22 +41,22 @@ const response = await fetch('http://localhost:8081/v1/graphql', {
   body: JSON.stringify({
     query: `
       query {
-      pokemon_v2_pokemonspecies(order_by: {id: asc}, offset: ${offset}, limit: ${itemsPerPage}) {
-        id
-        pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
-          name
-        }
-        pokemon_v2_pokemons {
-          pokemon_v2_pokemontypes {
-            pokemon_v2_type {
-              name
-              pokemon_v2_typenames(where: {language_id: {_eq: 9}}) {
+        pokemon_v2_pokemonspecies(order_by: {id: asc}, offset: ${offset}, limit: ${itemsPerPage}) {
+          id
+          pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
+            name
+          }
+          pokemon_v2_pokemons {
+            pokemon_v2_pokemontypes {
+              pokemon_v2_type {
                 name
+                pokemon_v2_typenames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
               }
             }
           }
         }
-      }
       }
     `
   })
