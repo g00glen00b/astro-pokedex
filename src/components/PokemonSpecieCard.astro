@@ -1,0 +1,39 @@
+---
+import type { PokemonSpecie } from "../models/PokemonSpecie";
+import PokemonTypeLabels from "./PokemonTypeLabels.astro";
+
+const {specie} = Astro.props as {specie: PokemonSpecie};
+const id = specie.id!;
+const name = specie.pokemon_v2_pokemonspeciesnames![0].name!;
+const types = specie.pokemon_v2_pokemons![0].pokemon_v2_pokemontypes!;
+---
+<a class="card" href={`/pokemon/${id}`}>
+  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`} />
+  <span class="number">#{id.toString().padStart(4, '0')}</span>
+  <h2>{name}</h2>
+  <PokemonTypeLabels types={types} />
+</a>
+<style>
+  .card {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: solid 2px #999;
+    text-decoration: none;
+    transition: .3s;
+    color: black;
+  }
+
+  .card:hover {
+    background-color: rgb(244, 202, 124);
+  }
+
+  .card h2 {
+    margin: 0;
+  }
+
+  .card .number {
+    color: rgba(0, 0, 0, .6);
+  }
+</style>

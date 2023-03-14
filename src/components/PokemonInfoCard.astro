@@ -1,0 +1,63 @@
+---
+import type { Pokemon } from "../models/PokemonSpecie";
+import PokemonStat from "./PokemonStat.astro";
+import PokemonTypeLabels from "./PokemonTypeLabels.astro";
+
+const {pokemon, specieName} = Astro.props as {pokemon: Pokemon, specieName: string};
+const formNames = pokemon.pokemon_v2_pokemonforms![0].pokemon_v2_pokemonformnames!;
+const stats = pokemon.pokemon_v2_pokemonstats!;
+const totalStatValue = stats.map(({base_stat}) => base_stat!).reduce((sum, stat) => sum + stat, 0);
+const types = pokemon.pokemon_v2_pokemontypes!;
+---
+<div class="card">
+  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} />
+  <h1>{formNames.length > 0 ? formNames[0].name! : specieName}</h1>
+  <PokemonTypeLabels types={types} />
+  <div class="stats">
+    {stats.map(stat => <PokemonStat stat={stat} />)}
+  </div>
+  <div class="total">
+    <span class="label">Total</span>
+    <span class="value">{totalStatValue}</span>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: white;
+    width: 20em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: solid 2px #999;
+    color: black;
+    margin: 1em;
+    padding: 1em;
+  }
+
+  h1 {
+    margin: 0.3em 0 0;
+  }
+
+  .stats {
+    margin-top: 1em;
+  }
+
+  .total {
+    display: flex;
+    width: 100%;
+    padding: 0.2em 0;
+    font-weight: 700;
+  }
+
+  .total .label {
+    margin-right: 1em;
+  }
+
+  .total .value {
+    margin-left: auto;
+    display: inline-block;
+    width: 2em;
+    text-align: right;
+  }
+</style>

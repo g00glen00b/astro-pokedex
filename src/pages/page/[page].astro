@@ -1,0 +1,100 @@
+---
+import Pagination from "../../components/Pagination.astro";
+import PokemonSpecieCard from "../../components/PokemonSpecieCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { DataWrapper } from "../../models/DataWrapper";
+import type { PokemonSpecieQueryResult } from "../../models/PokemonSpecie";
+
+export async function getStaticPaths() {
+  const response = await fetch('http://localhost:8081/v1/graphql', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'x-hasura-admin-secret': 'pokeapi-admin-password'},
+    body: JSON.stringify({
+      query: `
+        query {
+          pokemon_v2_pokemonspecies_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+      `
+    })
+  });
+  const result: DataWrapper<PokemonSpecieQueryResult> = await response.json();
+  const count = result.data.pokemon_v2_pokemonspecies_aggregate!.aggregate.count!;
+  const itemsPerPage = 24;
+  const totalPages = Math.ceil(count / itemsPerPage);
+  return Array
+    .from({length: totalPages}, (_, index) => index + 1)
+    .map(page => ({params: {page}, props: {totalPages, itemsPerPage}}));
+}
+
+const {page} = Astro.params;
+const {totalPages, itemsPerPage} = Astro.props;
+const pageNumber = parseInt(page || '1');
+const offset = (pageNumber - 1) * itemsPerPage;
+
+const response = await fetch('http://localhost:8081/v1/graphql', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json', 'x-hasura-admin-secret': 'pokeapi-admin-password'},
+  body: JSON.stringify({
+    query: `
+      query {
+      pokemon_v2_pokemonspecies(order_by: {id: asc}, offset: ${offset}, limit: ${itemsPerPage}) {
+        id
+        pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
+          name
+        }
+        pokemon_v2_pokemons {
+          pokemon_v2_pokemontypes {
+            pokemon_v2_type {
+              name
+              pokemon_v2_typenames(where: {language_id: {_eq: 9}}) {
+                name
+              }
+            }
+          }
+        }
+      }
+      }
+    `
+  })
+});
+const result: DataWrapper<PokemonSpecieQueryResult> = await response.json();
+const species = result.data.pokemon_v2_pokemonspecies!;
+---
+<BaseLayout>
+  <h1>Pokédex</h1>
+  <section class="cards">
+    {species.map(specie => (
+      <PokemonSpecieCard specie={specie}/>
+    ))}
+  </section>
+  <Pagination pageNumber={pageNumber} totalPages={totalPages} />
+  <style>
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-gap: 1em;
+    }
+
+    @media screen and (max-width: 1200px) {
+      .cards {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media screen and (max-width: 800px) {
+      .cards {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</BaseLayout>

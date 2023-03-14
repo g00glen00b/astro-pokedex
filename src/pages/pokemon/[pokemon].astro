@@ -1,0 +1,120 @@
+---
+import PokemonInfoCard from "../../components/PokemonInfoCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { DataWrapper } from "../../models/DataWrapper";
+import type { PokemonSpecieQueryResult } from "../../models/PokemonSpecie";
+
+export async function getStaticPaths() {
+  const response = await fetch('http://localhost:8081/v1/graphql', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'x-hasura-admin-secret': 'pokeapi-admin-password'},
+    body: JSON.stringify({
+      query: `
+        query {
+          pokemon_v2_pokemonspecies_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+      `
+    })
+  });
+  const {data: {pokemon_v2_pokemonspecies_aggregate: {aggregate: {count}}}} = await response.json();
+  return Array
+    .from({length: count}, (_, index) => index + 1)
+    .map(pokemon => ({params: {pokemon}}));
+}
+
+const {pokemon} = Astro.params;
+const response = await fetch('http://localhost:8081/v1/graphql', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json', 'x-hasura-admin-secret': 'pokeapi-admin-password'},
+  body: JSON.stringify({
+    query: `
+      query {
+        pokemon_v2_pokemonspecies(where: {id: {_eq: ${pokemon}}}) {
+          id
+          pokemon_v2_pokemonspeciesnames(where: {language_id: {_eq: 9}}) {
+            name
+          }
+          pokemon_v2_pokemons {
+            id
+            pokemon_v2_pokemontypes {
+              pokemon_v2_type {
+                name
+                pokemon_v2_typenames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
+              }
+            }
+            pokemon_v2_pokemonforms {
+              pokemon_v2_pokemonformnames(where: {language_id: {_eq: 9}}) {
+                name
+              }
+            }
+            pokemon_v2_pokemonstats {
+              base_stat
+              pokemon_v2_stat {
+                pokemon_v2_statnames(where: {language_id: {_eq: 9}}) {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+  })
+});
+const result: DataWrapper<PokemonSpecieQueryResult> = await response.json();
+const specie = result.data.pokemon_v2_pokemonspecies![0];
+const specieName = specie.pokemon_v2_pokemonspeciesnames![0].name!;
+const page = Math.floor((parseInt(pokemon || '1') - 1) / 24) + 1;
+---
+<BaseLayout>
+  <header>
+    <a href={`/page/${page}`}>&larr; Go back</a>
+    <h1>{specieName}</h1>
+    <span></span>
+  </header>
+  <section class="forms">
+    {specie.pokemon_v2_pokemons!.map(pokemon => <PokemonInfoCard specieName={specieName} pokemon={pokemon} />)}
+  </section>
+</BaseLayout>
+
+<style>
+  header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header a {
+    background: white;
+    border: solid 2px #999;
+    padding: 0.5em 0;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    transition: .15s;
+    width: 7em;
+    text-align: center;
+  }
+
+  header span {
+    width: 7em;
+  }
+
+  header a:hover {
+    background-color: rgb(244, 202, 124);
+  }
+
+  .forms {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>

@@ -1,0 +1,108 @@
+---
+import type { PokemonTypeWrapper } from "../models/PokemonSpecie";
+const {type} = Astro.props as {type: PokemonTypeWrapper};
+const key = type.pokemon_v2_type!.name!;
+const name = type.pokemon_v2_type!.pokemon_v2_typenames![0].name!;
+---
+<span class={key}>{name}</span>
+
+<style>
+
+  span {
+    width: 4em;
+    display: inline-block;
+    border-radius: 3px;
+    text-align: center;
+    margin: 0.3em 0.1em;
+  }
+
+  .poison {
+    color: white;
+    background-color: darkorchid;
+  }
+
+  .grass {
+    color: black;
+    background-color: mediumseagreen;
+  }
+
+  .fire {
+    color: white;
+    background-color: darkorange;
+  }
+
+  .flying {
+    color: black;
+    background-color: skyblue;
+  }
+
+  .water {
+    color: white;
+    background-color: dodgerblue;
+  }
+
+  .bug {
+    color: black;
+    background-color: lightgreen;
+  }
+
+  .normal {
+    color: black;
+    background-color: lightgrey;
+  }
+
+  .electric {
+    color: black;
+    background-color: gold;
+  }
+
+  .ground {
+    color: black;
+    background-color: burlywood;
+  }
+
+  .fairy {
+    color: black;
+    background-color: lightpink;
+  }
+
+  .fighting {
+    color: white;
+    background-color: firebrick;
+  }
+
+  .psychic {
+    color: white;
+    background-color: hotpink;
+  }
+
+  .rock {
+    color: white;
+    background-color: saddlebrown;
+  }
+
+  .steel {
+    color: white;
+    background-color: lightslategray;
+  }
+
+  .ice {
+    color: black;
+    background-color: powderblue;
+  }
+
+  .ghost {
+    color: white;
+    background-color: darkslateblue;
+  }
+
+  .dragon {
+    color: white;
+    background-color: darkslategray;
+  }
+
+  .dark {
+    color: white;
+    background-color: dimgray;
+  }
+</style>

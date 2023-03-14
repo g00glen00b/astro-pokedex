@@ -1,0 +1,27 @@
+---
+const {value, max} = Astro.props as {value: number, max: number};
+const numberOfBlocks = 8;
+const highlightedBlocks = Math.floor(value / max * numberOfBlocks);
+const progressBlocks: boolean[] = Array.from({length: numberOfBlocks}, (_, index) => index < highlightedBlocks);
+---
+<div class="progressbar">
+  {progressBlocks.map(progress => progress ? <span class="highlighted"></span> : <span></span>)}
+</div>
+
+<style>
+  .progressbar {
+    display: inline-block;
+  }
+
+  .progressbar > span {
+    width: 16px;
+    height: 16px;
+    background-color: black;
+    margin: 0.1em;
+    display: inline-block;
+  }
+
+  .progressbar > span.highlighted {
+    background-color: rgb(244, 202, 124);
+  }
+</style>

@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    environment:
+      POSTGRES_USER: pokeapi-user
+      POSTGRES_PASSWORD: pokeapi-password
+      POSTGRES_DB: pokeapi
+    image: postgres:15-alpine
+    container_name: pokeapi-postgres
+    restart: always
+    volumes:
+      - "./temp/db:/var/lib/postgresql/data"
+  redis:
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    image: bitnami/redis:7.0.8
+    container_name: pokeapi-redis
+    restart: always
+    volumes:
+      - "./temp/redis:/bitnami/redis/data"
+  pokeapi:
+    environment:
+      POSTGRES_USER: pokeapi-user
+      POSTGRES_PASSWORD: pokeapi-password
+      POSTGRES_DB: pokeapi
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_CONNECTION_STRING: redis://redis:6379
+    image: pokeapi/pokeapi:2.4.0
+    container_name: pokeapi
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+  pokeapi-graphql:
+    container_name: "pokeapi-graphql"
+    environment:
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "false"
+      HASURA_GRAPHQL_LOG_LEVEL: "warn"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ADMIN_SECRET: pokeapi-admin-password
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anon
+      HASURA_GRAPHQL_ENABLED_TELEMETRY: false
+      HASURA_GRAPHQL_DATABASE_URL: postgres://pokeapi-user:pokeapi-password@postgres:5432/pokeapi
+    image: "hasura/graphql-engine:v2.19.0"
+    ports:
+      - "8081:8080"
+    restart: always

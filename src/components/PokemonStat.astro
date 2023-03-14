@@ -1,0 +1,36 @@
+---
+import type { PokemonStatValue } from "../models/PokemonSpecie";
+import ProgressBar from "./ProgressBar.astro";
+
+const {stat} = Astro.props as {stat: PokemonStatValue};
+const label: string = stat.pokemon_v2_stat!.pokemon_v2_statnames![0].name!;
+const maxValue: number = 255;
+const value: number = stat.base_stat!;
+---
+<div class="stat">
+  <span class="label">{label}</span>
+  <div class="progressbar"><ProgressBar value={value} max={maxValue} /></div>
+  <span class="value">{value}</span>
+</div>
+
+<style>
+  .stat {
+    display: flex;
+    width: 100%;
+    padding: 0.2em 0;
+  }
+
+  .label {
+    margin-right: 1em;
+  }
+
+  .progressbar {
+    margin-left: auto;
+  }
+
+  .value {
+    display: inline-block;
+    width: 2em;
+    text-align: right;
+  }
+</style>

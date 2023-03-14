@@ -1,0 +1,40 @@
+---
+const {pageNumber, totalPages} = Astro.props;
+const isFirst = pageNumber == 1;
+const isLast = pageNumber == totalPages;
+---
+<section class="pagination">
+  {isFirst ? <span></span> : <a href="/page/1">&larr; First</a>}
+  {isFirst ? <span></span> : <a href={`/page/${pageNumber - 1}`}>&larr; Previous</a>}
+  <span>Page {pageNumber} of {totalPages}</span>
+  {isLast ? <span></span> : <a href={`/page/${pageNumber + 1}`}>Next &rarr;</a>}
+  {isLast ? <span></span> : <a href={`/page/${totalPages}`}>Last &rarr;</a>}
+</section>
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1em 0;
+  }
+
+  .pagination a {
+    background: white;
+    border: solid 2px #999;
+    padding: 0.5em 0;
+    width: 7em;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    transition: .15s;
+    text-align: center;
+  }
+
+  .pagination span {
+    width: 7em;
+  }
+
+  .pagination a:hover {
+    background-color: rgb(244, 202, 124);
+  }
+</style>
