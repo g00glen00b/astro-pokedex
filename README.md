@@ -20,8 +20,21 @@ This can be done by executing the following command:
 ./initialize.sh
 ```
 
-After that, you can run the application with:
+Once the containers are running, you can verify this by checking the following URLs:
+
+- http://localhost:8081 should contain the [Hasura dashboard](https://hasura.io/)
+- http://localhost:8080/api/v2/pokemon-species/ should contain the PokéAPI REST API
+
+After that, you can install the project dependencies with:
+
+```
+npm install
+```
+
+And finally, you can run the application with:
 
 ```
 npm run dev
 ```
+
+This should run the application at http://localhost:3000.
